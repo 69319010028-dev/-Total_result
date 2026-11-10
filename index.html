@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Directory & Link Portal | รวมลิงก์สมาชิก</title>
+
+    <!-- Google Fonts: Prompt & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-glow: rgba(79, 70, 229, 0.35);
+            --bg-dark: #0f172a;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-border: rgba(226, 232, 240, 0.8);
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Prompt', 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: #0b1120;
+            background-image:
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.25) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.22) 0px, transparent 50%),
+                radial-gradient(at 50% 100%, rgba(56, 189, 248, 0.2) 0px, transparent 50%);
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 50px 20px;
+            color: var(--text-main);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* ตกแต่งแสงพื้นหลังเรืองแสง (Ambient Glows) */
+        .ambient-glow {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.6;
+            animation: floatGlow 12s ease-in-out infinite alternate;
+        }
+
+        .glow-1 {
+            top: -100px;
+            left: -100px;
+            background: #6366f1;
+        }
+
+        .glow-2 {
+            bottom: -100px;
+            right: -100px;
+            background: #ec4899;
+            animation-delay: -6s;
+        }
+
+        @keyframes floatGlow {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            100% {
+                transform: translate(40px, 30px) scale(1.1);
+            }
+        }
+
+        /* การ์ดคอนเทนเนอร์หลัก Glassmorphism */
+        .main-wrapper {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 680px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 32px;
+            padding: 40px 32px;
+            box-shadow:
+                0 25px 60px -15px rgba(0, 0, 0, 0.35),
+                0 0 0 1px rgba(255, 255, 255, 0.4) inset;
+        }
+
+        /* ส่วนหัว Header */
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .badge-portal {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, #e0e7ff 0%, #ede9fe 100%);
+            color: #4338ca;
+            padding: 6px 16px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            margin-bottom: 14px;
+            border: 1px solid rgba(199, 210, 254, 0.8);
+        }
+
+        .badge-pulse {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #10b981;
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            animation: pulseDot 2s infinite;
+        }
+
+        @keyframes pulseDot {
+            0% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 7px rgba(16, 185, 129, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+
+        .header h1 {
+            font-size: 30px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #0f172a 30%, #4338ca 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            font-size: 15px;
+            color: var(--text-sub);
+            font-weight: 400;
+        }
+
+        /* ช่องค้นหาแบบเรียลไทม์ (Live Search) */
+        .search-box {
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 14px 20px 14px 48px;
+            border-radius: 16px;
+            border: 1.5px solid #e2e8f0;
+            background: #f8fafc;
+            font-size: 15px;
+            color: #1e293b;
+            transition: all 0.25s ease;
+            outline: none;
+        }
+
+        .search-box input:focus {
+            background: #ffffff;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-icon svg {
+            width: 22px;
+            height: 22px;
+            display: block;
+            transition: transform 0.25s ease;
+        }
+
+        .search-box:focus-within .search-icon svg {
+            transform: scale(1.08) rotate(-3deg);
+        }
+
+        /* แถบสรุปจำนวน */
+        .portal-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 4px 14px 4px;
+            font-size: 13px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        /* รายการการ์ด */
+        .member-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        /* ดีไซน์การ์ดแต่ละคน */
+        .member-card {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            background: #ffffff;
+            border: 1.5px solid #eef2f6;
+            border-radius: 20px;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        /* เส้นแสงเงา Gradient ด้านข้างเวลานำเมาส์ไปชี้ */
+        .member-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 5px;
+            background: linear-gradient(to bottom, #6366f1, #a855f7);
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        .member-card:hover {
+            transform: translateY(-3px) scale(1.01);
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 16px 30px -8px rgba(99, 102, 241, 0.18);
+            background: #fdfdfd;
+        }
+
+        .member-card:hover::before {
+            opacity: 1;
+        }
+
+        /* รูปประจำตัว Avatar พร้อมสถานะ */
+        .avatar-container {
+            position: relative;
+            margin-right: 18px;
+            flex-shrink: 0;
+        }
+
+        .avatar {
+            width: 58px;
+            height: 58px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffffff;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+            transition: transform 0.25s ease;
+        }
+
+        .member-card:hover .avatar {
+            transform: rotate(-3deg) scale(1.05);
+        }
+
+        /* จุดออนไลน์ตรงรูป */
+        .status-badge {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 14px;
+            height: 14px;
+            background: #10b981;
+            border: 2.5px solid #ffffff;
+            border-radius: 50%;
+        }
+
+        /* ข้อมูลรายละเอียด */
+        .info {
+            flex-grow: 1;
+            min-width: 0;
+        }
+
+        .name-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+            flex-wrap: wrap;
+        }
+
+        .name {
+            font-size: 17px;
+            font-weight: 600;
+            color: #0f172a;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ตราเครื่องหมายถูกต้อง Verified */
+        .verified-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 17px;
+            height: 17px;
+            background: #3b82f6;
+            color: #ffffff;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .verified-badge svg {
+            width: 10px;
+            height: 10px;
+            stroke-width: 3;
+        }
+
+        /* ป้ายตำแหน่ง / แผนก */
+        .tag-role {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .desc {
+            font-size: 13.5px;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .url-preview {
+            color: #6366f1;
+            font-weight: 500;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 13px;
+        }
+
+        /* ปุ่มทางขวาและลูกศร */
+        .action-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-left: 12px;
+            flex-shrink: 0;
+        }
+
+        .open-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 14px;
+            background: #f8fafc;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+            transition: all 0.25s ease;
+        }
+
+        .member-card:hover .open-btn {
+            background: #6366f1;
+            color: #ffffff;
+            border-color: #6366f1;
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+        }
+
+        .open-btn svg {
+            width: 18px;
+            height: 18px;
+            stroke-width: 2.3;
+        }
+
+        /* โทนสี Gradient ของแต่ละ Avatar */
+        .grad-blue {
+            background: linear-gradient(135deg, #2563eb, #38bdf8);
+        }
+
+        .grad-emerald {
+            background: linear-gradient(135deg, #059669, #34d399);
+        }
+
+        .grad-purple {
+            background: linear-gradient(135deg, #7c3aed, #c084fc);
+        }
+
+        .grad-orange {
+            background: linear-gradient(135deg, #ea580c, #fbbf24);
+        }
+
+        .grad-rose {
+            background: linear-gradient(135deg, #e11d48, #fb7185);
+        }
+
+        .grad-teal {
+            background: linear-gradient(135deg, #0d9488, #2dd4bf);
+        }
+
+        .grad-indigo {
+            background: linear-gradient(135deg, #4f46e5, #818cf8);
+        }
+
+        /* ข้อความเมื่อไม่พบผลการค้นหา */
+        .empty-state {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+            color: #94a3b8;
+        }
+
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            stroke: #cbd5e1;
+            margin-bottom: 12px;
+        }
+
+        /* ส่วนท้าย Footer */
+        .footer {
+            margin-top: 32px;
+            padding-top: 20px;
+            border-top: 1px solid #f1f5f9;
+            text-align: center;
+            font-size: 13px;
+            color: #94a3b8;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        /* Responsive บนมือถือ */
+        @media (max-width: 540px) {
+            body {
+                padding: 20px 12px;
+            }
+
+            .main-wrapper {
+                padding: 28px 18px;
+                border-radius: 26px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .avatar {
+                width: 48px;
+                height: 48px;
+                font-size: 19px;
+                border-radius: 14px;
+            }
+
+            .name {
+                font-size: 15.5px;
+            }
+
+            .open-btn {
+                width: 36px;
+                height: 36px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- แสงเรืองแสงพื้นหลัง -->
+    <div class="ambient-glow glow-1"></div>
+    <div class="ambient-glow glow-2"></div>
+
+    <div class="main-wrapper">
+        <!-- Header -->
+        <div class="header">
+            <h1>รายชื่อและลิงก์สมาชิก</h1>
+            <p>แตะหรือคลิกที่ชื่อเพื่อเดินทางไปยังเว็บไซต์ส่วนบุคคลทันที</p>
+        </div>
+
+        <!-- กล่องค้นหาแบบ Real-time -->
+        <div class="search-box">
+            <span class="search-icon">
+                <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <!-- เงาความลึก 3D -->
+                        <filter id="glass3d-shadow" x="-20%" y="-20%" width="150%" height="150%">
+                            <feDropShadow dx="0.6" dy="1.4" stdDeviation="0.9" flood-color="#0f172a"
+                                flood-opacity="0.32" />
+                        </filter>
+                        <!-- ขอบวงแหวนโลหะสีเข้มพร้อมไฮไลท์เงา -->
+                        <linearGradient id="g3d-rim" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stop-color="#64748b" />
+                            <stop offset="25%" stop-color="#334155" />
+                            <stop offset="70%" stop-color="#0f172a" />
+                            <stop offset="100%" stop-color="#020617" />
+                        </linearGradient>
+                        <!-- ข้อต่อโลหะเงินคอด้าม -->
+                        <linearGradient id="g3d-ferrule" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#f1f5f9" />
+                            <stop offset="40%" stop-color="#cbd5e1" />
+                            <stop offset="75%" stop-color="#94a3b8" />
+                            <stop offset="100%" stop-color="#475569" />
+                        </linearGradient>
+                        <!-- ด้ามจับกระบอก 3D สีเข้มเงาวาว -->
+                        <linearGradient id="g3d-handle" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#334155" />
+                            <stop offset="22%" stop-color="#94a3b8" />
+                            <stop offset="48%" stop-color="#1e293b" />
+                            <stop offset="85%" stop-color="#0f172a" />
+                            <stop offset="100%" stop-color="#020617" />
+                        </linearGradient>
+                        <!-- เลนส์แก้วสีฟ้าสดใส -->
+                        <linearGradient id="g3d-lens" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stop-color="#bae6fd" />
+                            <stop offset="35%" stop-color="#60a5fa" />
+                            <stop offset="75%" stop-color="#3b82f6" />
+                            <stop offset="100%" stop-color="#1d4ed8" />
+                        </linearGradient>
+                        <!-- แสงสะท้อนกระจกเฉียงด้านบนซ้าย -->
+                        <linearGradient id="g3d-glare" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95" />
+                            <stop offset="55%" stop-color="#ffffff" stop-opacity="0.4" />
+                            <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+                        </linearGradient>
+                        <clipPath id="g3d-clip">
+                            <circle cx="12" cy="12" r="6.3" />
+                        </clipPath>
+                    </defs>
+
+                    <g filter="url(#glass3d-shadow)">
+                        <!-- ด้ามจับและข้อต่อหมุน 45 องศาลงขวาล่าง -->
+                        <g transform="rotate(45 12 12)">
+                            <!-- ข้อต่อโลหะเงิน -->
+                            <rect x="17" y="10.4" width="2.4" height="3.2" rx="0.6" fill="url(#g3d-ferrule)"
+                                stroke="#0f172a" stroke-width="0.7" />
+                            <!-- ตัวด้ามจับ -->
+                            <rect x="19" y="9.7" width="10.5" height="4.6" rx="2.3" fill="url(#g3d-handle)"
+                                stroke="#0f172a" stroke-width="0.8" />
+                        </g>
+
+                        <!-- ขอบนอกเลนส์ -->
+                        <circle cx="12" cy="12" r="8" fill="url(#g3d-rim)" stroke="#0f172a" stroke-width="0.9" />
+                        <!-- ขอบในสีเข้มคมชัด -->
+                        <circle cx="12" cy="12" r="6.6" fill="#0f172a" />
+
+                        <!-- ผิวกระจกเลนส์แก้ว -->
+                        <g clip-path="url(#g3d-clip)">
+                            <circle cx="12" cy="12" r="6.3" fill="url(#g3d-lens)" />
+                            <!-- แสงสะท้อนกระจกเงาวาวด้านบนซ้าย -->
+                            <ellipse cx="9.6" cy="9.2" rx="4.8" ry="3.1" transform="rotate(-35 9.6 9.2)"
+                                fill="url(#g3d-glare)" />
+                            <!-- ประกายแสงสะท้อนขอบล่างของแก้ว -->
+                            <circle cx="12" cy="12" r="5.7" fill="none" stroke="#ffffff" stroke-width="0.5"
+                                stroke-dasharray="6 15" stroke-dashoffset="15" opacity="0.65" />
+                        </g>
+                    </g>
+                </svg>
+            </span>
+            <input type="text" id="searchInput" placeholder="ค้นหาชื่อ, ตำแหน่ง หรือเว็บไซต์..." autocomplete="off">
+        </div>
+
+        <!-- แถบสถิติ -->
+        <div class="portal-stats">
+            <span id="memberCount">มีทั้งหมด 7 รายชื่อ</span>
+            <span>ลิงก์ตรงทันที</span>
+        </div>
+
+        <!-- รายการบุคคล (Member List) -->
+        <div class="member-list" id="memberList">
+
+            <!-- คนที่ 1 -->
+            <a href="https://65-siet4.vercel.app/" target="_blank" rel="noopener noreferrer" class="member-card"
+                data-tags="กิตติศักดิ์ google search พัฒนาเว็บ developer">
+                <div class="avatar-container">
+                    <div class="avatar grad-blue">ก</div>
+                    <div class="status-badge" title="ออนไลน์"></div>
+                </div>
+                <div class="info">
+                    <div class="name-wrapper">
+                        <span class="name">นายภควัต ศรีรัตน์</span>
+                        <span class="verified-badge" title="ยืนยันตัวตนแล้ว"><svg viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor">
+                                <polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round">
+                                </polyline>
+                            </svg></span>
+                        <span class="tag-role">ใส่เว็ปมาแล้ว</span>
+                    </div>
+                    <div class="desc">
+                        <span>ไปที่เว็บ:</span>
+                        <span class="url-preview">เว็ปโปรไฟล์</span>
+                    </div>
+                </div>
+                <div class="action-area">
+                    <div class="open-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                </div>
+            </a>
+
+            <!-- คนที่ 2 -->
+            <a href="https://www.figma.com/proto/F5LiNFQKCqQszm5H57iICv/Untitled?node-id=1-902&p=f&t=emxELvnq8N1SfyfH-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=1%3A902"
+                target="_blank" rel="noopener noreferrer" class="member-card"
+                data-tags="สมชาย youtube video creator การตลาด marketing">
+                <div class="avatar-container">
+                    <div class="avatar grad-rose">ส</div>
+                    <div class="status-badge" title="ออนไลน์"></div>
+                </div>
+                <div class="info">
+                    <div class="name-wrapper">
+                        <span class="name">นายพัศกร พินทอง</span>
+                        <span class="verified-badge" title="ยืนยันตัวตนแล้ว"><svg viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor">
+                                <polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round">
+                                </polyline>
+                            </svg></span>
+                        <span class="tag-role">ใส่เว็ปมาแล้ว</span>
+                    </div>
+                    <div class="desc">
+                        <span>ไปที่เว็บ:</span>
+                        <span class="url-preview">เว็ปโปรไฟล์</span>
+                    </div>
+                </div>
+                <div class="action-area">
+                    <div class="open-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                </div>
+            </a>
+
+            <!-- คนที่ 3 -->
+            <a href="https://www.figma.com/proto/hJgDpRSZuCBa58GUCyqp61/Untitled?node-id=1-3&t=zdq7BUKfOTYmWbTG-0&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1"
+                target="_blank" rel="noopener noreferrer" class="member-card"
+                data-tags="นภาวรรณ facebook social media ผู้จัดการ manager">
+                <div class="avatar-container">
+                    <div class="avatar grad-purple">น</div>
+                    <div class="status-badge" title="ออนไลน์"></div>
+                </div>
+                <div class="info">
+                    <div class="name-wrapper">
+                        <span class="name">นายกรณ์ดนัย บุญมา</span>
+                        <span class="verified-badge" title="ยืนยันตัวตนแล้ว"><svg viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor">
+                                <polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round">
+                                </polyline>
+                            </svg></span>
+                        <span class="tag-role">ใส่เว็ปมาแล้ว</span>
+                    </div>
+                    <div class="desc">
+                        <span>ไปที่เว็บ:</span>
+                        <span class="url-preview">เว็ปโปรไฟล์</span>
+                    </div>
+                </div>
+                <div class="action-area">
+                    <div class="open-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                </div>
+            </a>
+
+            <!-- คนที่ 4 -->
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="member-card"
+                data-tags="ธนกร github engineer code devops">
+                <div class="avatar-container">
+                    <div class="avatar grad-emerald">ธ</div>
+                    <div class="status-badge" title="ออนไลน์"></div>
+                </div>
+                <div class="info">
+                    <div class="name-wrapper">
+                        <span class="name">คุณธนกร รัตนวงศ์</span>
+                        <span class="verified-badge" title="ยืนยันตัวตนแล้ว"><svg viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor">
+                                <polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round">
+                                </polyline>
+                            </svg></span>
+                        <span class="tag-role">Software Engineer</span>
+                    </div>
+                    <div class="desc">
+                        <span>ไปที่เว็บ:</span>
+                        <span class="url-preview">github.com</span>
+                    </div>
+                </div>
+                <div class="action-area">
+                    <div class="open-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                </div>
+            </a>
+
+            <!-- คนที่ 5 -->
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="member-card"
+                data-tags="อาริยา linkedin designer ux ui">
+                <div class="avatar-container">
+                    <div class="avatar grad-orange">อ</div>
+                    <div class="status-badge" title="ออนไลน์"></div>
+                </div>
+                <div class="info">
+                    <div class="name-wrapper">
+                        <span class="name">คุณอาริยา ปัญญาวงศ์</span>
+                        <span class="verified-badge" title="ยืนยันตัวตนแล้ว"><svg viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor">
+                                <polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round">
+                                </polyline>
+                            </svg></span>
+                        <span class="tag-role">UI/UX Designer</span>
+                    </div>
+                    <div class="desc">
+                        <span>ไปที่เว็บ:</span>
+                        <span class="url-preview">linkedin.com</span>
+                    </div>
+                </div>
+                <div class="action-area">
+                    <div class="open-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                </div>
+            </a>
+
+            <!-- คนที่ 6 -->
+            <a href="https://www.notion.so" target="_blank" rel="noopener noreferrer" class="member-card"
+                data-tags="พิมพ์ชนก notion data scientist ai วิเคราะห์ข้อมูล">
+                <div class="avatar-container">
+                    <div class="avatar grad-teal">พ</div>
+                    <div class="status-badge" title="ออนไลน์"></div>
+                </div>
+                <div class="info">
+                    <div class="name-wrapper">
+                        <span class="name">คุณพิมพ์ชนก วัฒนากุล</span>
+                        <span class="verified-badge" title="ยืนยันตัวตนแล้ว"><svg viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor">
+                                <polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round">
+                                </polyline>
+                            </svg></span>
+                        <span class="tag-role">Data Scientist</span>
+                    </div>
+                    <div class="desc">
+                        <span>ไปที่เว็บ:</span>
+                        <span class="url-preview">notion.so</span>
+                    </div>
+                </div>
+                <div class="action-area">
+                    <div class="open-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                </div>
+            </a>
+
+            <!-- คนที่ 7 -->
+            <a href="https://gitlab.com" target="_blank" rel="noopener noreferrer" class="member-card"
+                data-tags="ณัฐภัทร gitlab devops cloud infrastructure วิศวกร">
+                <div class="avatar-container">
+                    <div class="avatar grad-indigo">ณ</div>
+                    <div class="status-badge" title="ออนไลน์"></div>
+                </div>
+                <div class="info">
+                    <div class="name-wrapper">
+                        <span class="name">คุณณัฐภัทร ทวีโชค</span>
+                        <span class="verified-badge" title="ยืนยันตัวตนแล้ว"><svg viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor">
+                                <polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round">
+                                </polyline>
+                            </svg></span>
+                        <span class="tag-role">DevOps Engineer</span>
+                    </div>
+                    <div class="desc">
+                        <span>ไปที่เว็บ:</span>
+                        <span class="url-preview">gitlab.com</span>
+                    </div>
+                </div>
+                <div class="action-area">
+                    <div class="open-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M7 17L17 7M17 7H7M17 7V17" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+
+        <!-- หน้าจอเมื่อพิมพ์ค้นหาแล้วไม่พบ -->
+        <div class="empty-state" id="emptyState">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <p>ไม่พบรายชื่อที่ตรงกับคำค้นหา</p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <span>สามารถคลิกเพื่อเปิดเว็บใหม่ หรือแก้ไข <code>href="..."</code> เพื่อเปลี่ยนเว็บได้เลย</span>
+        </div>
+    </div>
+
+    <!-- JavaScript สำหรับระบบค้นหาแบบ Real-time -->
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const cards = document.querySelectorAll('.member-card');
+        const emptyState = document.getElementById('emptyState');
+        const memberCount = document.getElementById('memberCount');
+
+        searchInput.addEventListener('input', function (e) {
+            const query = e.target.value.toLowerCase().trim();
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const text = (card.textContent + ' ' + card.getAttribute('data-tags')).toLowerCase();
+                if (text.includes(query)) {
+                    card.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            if (visibleCount === 0) {
+                emptyState.style.display = 'block';
+                memberCount.textContent = 'ไม่พบผลลัพธ์';
+            } else if (!query) {
+                emptyState.style.display = 'none';
+                memberCount.textContent = `มีทั้งหมด ${cards.length} รายชื่อ`;
+            } else {
+                emptyState.style.display = 'none';
+                memberCount.textContent = `แสดง ${visibleCount} จาก ${cards.length} รายชื่อ`;
+            }
+        });
+    </script>
+</body>
+
+</html>
