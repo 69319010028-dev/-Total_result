@@ -34,6 +34,7 @@ static HTML/CSS/Vanilla JS (Single-file, no build step, no backend)
 
 ## Evidence on Hand
 - `index.html` หน้าไดเรกทอรีบุคลากรที่ใช้งานได้จริง พร้อมรายชื่อสมาชิกเริ่มต้น 7 รายการ
+- `logo.jpg` ตราสัญลักษณ์ วิทยาลัยเทคนิคนครศรีธรรมราช (Favicon และ Logo ส่วนหัว)
 
 ## Product Principles
 - **Speed & Simplicity:** โหลดเร็ว เปิดไฟล์ใช้งานได้ทันที ไร้ภาระการติดตั้งหรือ build
